@@ -1,0 +1,86 @@
+import random
+from datetime import datetime, timedelta
+
+class Team:
+    def __init__(self, name):
+        self.name = name
+
+class Match:
+    def __init__(self, team1, team2, date):
+        self.team1 = team1
+        self.team2 = team2
+        self.date = date
+
+class Tournament:
+    def __init__(self, name):
+        self.name = name
+        self.teams = []
+        self.matches = []
+
+    def add_team(self, team):
+        if team not in self.teams:
+            self.teams.append(team)
+        else:
+            print(f"Team {team.name} is already in the tournament.")
+
+    def remove_team(self, team):
+        if team in self.teams:
+            self.teams.remove(team)
+        else:
+            print(f"Team {team.name} is not in the tournament.")
+
+    def get_teams(self):
+        return [team.name for team in self.teams]
+
+    def schedule_match(self, team1, team2, date):
+        match = Match(team1, team2, date)
+        self.matches.append(match)
+
+    def get_matches(self):
+        return self.matches
+
+    def automate_match_scheduling(self, start_date, num_days):
+        for i in range(len(self.teams)):
+            for j in range(i + 1, len(self.teams)):
+                match_date = start_date + timedelta(days=random.randint(0, num_days))
+                self.schedule_match(self.teams[i], self.teams[j], match_date)
+
+    def generate_tournament_brackets(self):
+        if len(self.teams) < 2:
+            return "Not enough teams to generate brackets."
+        
+        bracket = []
+        random.shuffle(self.teams)
+        while len(self.teams) > 1:
+            round_matches = []
+            while len(self.teams) >= 2:
+                team1 = self.teams.pop()
+                team2 = self.teams.pop()
+                round_matches.append((team1.name, team2.name))
+            bracket.append(round_matches)
+
+        return bracket
+
+# Example Usage
+if __name__ == "__main__":
+    tournament = Tournament("Champions League")
+    tournament.add_team(Team("CSK"))
+    tournament.add_team(Team("RCB"))
+    tournament.add_team(Team("MI"))
+    tournament.add_team(Team("DELHI CAP"))
+
+    # Schedule matches automatically
+    start_date = datetime.now()
+    tournament.automate_match_scheduling(start_date, 30)
+
+    # Generate tournament brackets
+    brackets = tournament.generate_tournament_brackets()
+    
+    print("Scheduled Matches:")
+    for match in tournament.get_matches():
+        print(f"{match.team1.name} vs {match.team2.name} on {match.date}")
+
+    print("\nTournament Brackets:")
+    for round in brackets:
+        for match in round:
+            print(f"{match[0]} vs {match[1]}")
